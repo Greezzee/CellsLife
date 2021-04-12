@@ -104,6 +104,9 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CellsSource\Cell.cpp" />
+    <ClCompile Include="CellsSource\CellCorpse.cpp" />
+    <ClCompile Include="CellsSource\CellGrid.cpp" />
     <ClCompile Include="engine\colliders\CircleCollider.cpp" />
     <ClCompile Include="engine\colliders\Collider.cpp" />
     <ClCompile Include="engine\colliders\EllipseCollider.cpp" />
@@ -131,6 +134,12 @@
     <ClCompile Include="Tests\main.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CellsSource\BasicCell.h" />
+    <ClInclude Include="CellsSource\Cell.h" />
+    <ClInclude Include="CellsSource\CellCorpse.h" />
+    <ClInclude Include="CellsSource\CellGrid.h" />
+    <ClInclude Include="CellsSource\CellScene.h" />
+    <ClInclude Include="CellsSource\Gen.h" />
     <ClInclude Include="Engine\AllEngine.h" />
     <ClInclude Include="engine\colliders\CircleCollider.h" />
     <ClInclude Include="engine\colliders\Collider.h" />

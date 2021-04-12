@@ -81,6 +81,7 @@ void LightManager::ApplyLight(sf::Shader* shader)
 		shader->setUniformArray("full_light_dist", full_light_dist, source_max_count);
 		shader->setUniformArray("any_light_dist", any_light_dist, source_max_count);
 		shader->setUniformArray("softness", softness, source_max_count);
+		shader->setUniform("time", (float)TimeManager::GetTimeFromLastRestart() / 1000000.f);
 	}
 	is_change = false;
 }

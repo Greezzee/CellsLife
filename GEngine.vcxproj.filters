@@ -94,6 +94,9 @@
     <Filter Include="Source Files\Engine\Graphics\ShaderManagment\LightManager">
       <UniqueIdentifier>{068ad7f3-d205-4a47-a649-61ebe170c30b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Tests\Cells">
+      <UniqueIdentifier>{84a1dea2-adac-4198-804a-551ed72e6247}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="engine\colliders\CircleCollider.cpp">
@@ -170,6 +173,15 @@
     </ClCompile>
     <ClCompile Include="Engine\Gameplay\ObjectsArray.cpp">
       <Filter>Source Files\Engine\Gameplay</Filter>
+    </ClCompile>
+    <ClCompile Include="CellsSource\CellCorpse.cpp">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClCompile>
+    <ClCompile Include="CellsSource\CellGrid.cpp">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClCompile>
+    <ClCompile Include="CellsSource\Cell.cpp">
+      <Filter>Header Files\Tests\Cells</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -253,6 +265,24 @@
     </ClInclude>
     <ClInclude Include="engine\gameplay\ObjectContainer.h">
       <Filter>Header Files\Engine\Gameplay</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\Cell.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\CellCorpse.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\CellGrid.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\CellScene.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\Gen.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellsSource\BasicCell.h">
+      <Filter>Header Files\Tests\Cells</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

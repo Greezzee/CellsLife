@@ -10,6 +10,7 @@ uniform vec4 light_color[128];
 uniform float full_light_dist[128];
 uniform float any_light_dist[128];
 uniform float softness[128];
+uniform float time;
 
 uniform vec4 global_light_color;
 
@@ -21,12 +22,15 @@ void main() {
 	for (int i = 0; i < source_count; i++) {
 		vec2 d = gl_FragCoord.xy - pos[i];
 		float dist = length(d);
-		if (dist < full_light_dist[i])
-			gl_FragColor += text_color * light_color[i];
-		else {
-			dist -= full_light_dist[i];
-			gl_FragColor += text_color * light_color[i] * pow(max(0.0, 1.0 - dist / any_light_dist[i]), softness[i]);
-		}
+		dist *= abs(sin(time));
+		//if (40.0 < dist && dist < 120.0)
+			gl_FragColor += text_color * light_color[i] * (1 - pow(abs(dist - 80.0) / 80.0, 0.5));
+		//if (dist < full_light_dist[i])
+		//	gl_FragColor += text_color * light_color[i];
+		//else {
+		//	dist -= full_light_dist[i];
+		//	gl_FragColor += text_color * light_color[i] * pow(max(0.0, 1.0 - dist / any_light_dist[i]), softness[i]);
+		//}
 	}
 
 	gl_FragColor = min(gl_FragColor, text_color);

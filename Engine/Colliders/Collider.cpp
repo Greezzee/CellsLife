@@ -199,7 +199,6 @@ float Collider::DistanceBetween(SquareCollider* a, SquareCollider* b, const Vect
 		Vector2F axis_pos_dist = AxisDistance(a, b, norm, direction);
 
 		if (isnan(axis_pos_dist.x) || isnan(axis_pos_dist.y)) {
-			printf("Axis_pos_dist A NAN\n");
 			return NAN;
 		}
 		
@@ -217,7 +216,6 @@ float Collider::DistanceBetween(SquareCollider* a, SquareCollider* b, const Vect
 
 		Vector2F axis_pos_dist = AxisDistance(a, b, norm, direction);
 		if (isnan(axis_pos_dist.x) || isnan(axis_pos_dist.y)) {
-			printf("Axis_pos_dist B NAN\n");
 			return NAN;
 		}
 		possible_distance.x = fmaxf(possible_distance.x, axis_pos_dist.x);
@@ -225,7 +223,6 @@ float Collider::DistanceBetween(SquareCollider* a, SquareCollider* b, const Vect
 	}
 
 	if (possible_distance.x > possible_distance.y) {
-		printf("x > y NAN\n");
 		return NAN;
 	}
 
@@ -237,8 +234,6 @@ float Collider::DistanceBetween(SquareCollider* a, SquareCollider* b, const Vect
 
 	if (possible_distance.x >= 0 && possible_distance.y >= 0)
 		return possible_distance.x;
-
-	printf("Exit NAN\n");
 	return NAN;
 }
 

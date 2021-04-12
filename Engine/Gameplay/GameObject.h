@@ -41,7 +41,7 @@ public:
 	virtual void Destroy() = 0;
 
 	//! Создание абсолютно нового объекта этого типа
-	virtual GameObject* Clone() const = 0;
+	virtual GameObject* Clone() const { return nullptr; };
 
 	Vector2F GetPos();
 	void SetPos(Vector2F pos);

@@ -23,7 +23,7 @@
 * 
 * НЕ ТРОГАТЬ
 */
-
+class DataMessage;
 class SceneManager
 {
 public:
@@ -34,10 +34,12 @@ public:
 	static void CreateScene(Scene* scene);
 
 	//! Удаляет сцену, вызывая её Destroy и очищая память
-	static void CloseScene(const Scene* scene);
+	static void CloseScene(const Scene* scene);;
 
 	//! Вызывается каждый кадр автоматически, обновляет сцены. Вызов вручную опасен!
 	static bool UpdateScenes();
+
+	//static void SendData(const Scene* dest, const DataMessage& mes);
 
 	//! Вызывается при закрытии игры, закрывает все сцены, очищает память
 	static void Destroy();

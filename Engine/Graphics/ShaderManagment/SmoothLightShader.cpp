@@ -1,5 +1,5 @@
 #include "SmoothLightShader.h"
-
+#include "../../AllEngine.h"
 sf::Shader SmoothLightShader::my_shader;
 
 SmoothLightShader::SmoothLightShader()
