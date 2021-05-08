@@ -2,12 +2,13 @@
 #include "../Engine/AllEngine.h"
 #include "CellGrid.h"
 #include "Cell.h"
+#include "../CellWall.h"
 class CellScene : public Scene {
 public:
 	void Init() override {
 		std::srand(time(NULL));
-		GraphicManager::ShowFPS(true);
-		grid_.SpawnCell(new Cell({10, 10}, 50.f));
+		//GraphicManager::ShowFPS(true);
+		//grid_.SpawnCell(new Cell({10, 10}, 50.f));
 		//grid_.SpawnCell(new Cell({ 11, 10 }, 5000.f));
 		//grid_.SpawnCell(new Cell({ 12, 10 }, 5000.f));
 		//grid_.SpawnCell(new Cell({ 13, 10 }, 5000.f));
@@ -23,7 +24,32 @@ public:
 
 	void Update() override {
 		Debugger::DrawPoint(Vector2F(0, 0), 5000, 0, Color(50, 50, 50));
-		grid_.UpdateCells();
+
+		if (InputManager::IsPressed(MouseKey::Mouse_Left)) {
+			Vector2I mouse_pos = Vector2I(static_cast<int>(InputManager::GetMousePos().x) / 4, static_cast<int>(InputManager::GetMousePos().y) / 4);
+			//grid_.SpawnCell(new CellWall(mouse_pos));
+			BasicCell* cell = grid_.GetCellFromGrid(mouse_pos);
+			Cell* c;
+			if ((c = dynamic_cast<Cell*>(cell)) != nullptr) {
+				c->PrintDNA();
+			}
+		}
+
+		if (InputManager::IsDown(MouseKey::Mouse_Right)) {
+			Vector2I mouse_pos = Vector2I(static_cast<int>(InputManager::GetMousePos().x) / 4, static_cast<int>(InputManager::GetMousePos().y) / 4);
+			grid_.SpawnCell(new Cell(mouse_pos, 50.f));
+		}
+
+		if (InputManager::IsPressed(KeyboardKey::R)) {
+			grid_.DeleteAllCells();
+		}
+
+		if (InputManager::IsPressed(KeyboardKey::SPACE)) {
+			is_paused = !is_paused;
+		}
+
+		if (!is_paused)
+			grid_.UpdateCells();
 		grid_.DrawCells();
 	}
 
@@ -32,4 +58,5 @@ public:
 
 private:
 	CellGrid grid_;
+	bool is_paused = false;
 };

@@ -2,90 +2,227 @@
 #include "BasicCell.h"
 #include "CellGrid.h"
 #include "CellCorpse.h"
+#include "Gen.h"
+
+unsigned Randomize256(unsigned x) {
+	unsigned r = rand() % 25;
+	switch (rand() % 3)
+	{
+	case 0:
+		return x;
+		break;
+	case 1:
+		if (x < 255 - r)
+			return x + r;
+		else
+			return x;
+		break;
+	case 2:
+		if (x < r)
+			return x;
+		else
+			return x - r;
+		break;
+	default:
+		return 0;
+		break;
+	}
+}
+
+bool IsSameWithError(unsigned a, unsigned b, unsigned error) {
+	unsigned A = std::min(a, b);
+	unsigned B = std::max(a, b);
+	return B - A <= error;
+}
 
 Cell::Cell(Vector2I start_pos, float start_energy) :
 	BasicCell(start_pos, start_energy, true), Beh_DNA_() {
 	for (auto& gen : Beh_DNA_)
-		gen = { gen_order::EAT_SUN, direction::UP };
+		gen = { gen_order::EAT_SUN, direction::UP, 0, 0 };
+	family_color_ = Color::Green();
+	my_type_ = cell_type_t::ALIVE;
 }
 
-Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA) :
+Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, Color parent_color) :
 	BasicCell(start_pos, start_energy, true) {
 	Beh_DNA_ = parent_DNA;
 	for (auto& gen : Beh_DNA_) {
-		if (rand() % 1000 < 1)
+		if (rand() % 100 < 1)
 			gen = { static_cast<gen_order>(std::rand() % static_cast<int>(gen_order::gen_order_count)),
-					static_cast<direction>(std::rand() % static_cast<int>(direction::direction_count)) };
+					static_cast<direction>(std::rand() % static_cast<int>(direction::direction_count)),
+					static_cast<char>(std::rand()), static_cast<char>(std::rand()) };
 	}
+
+	family_color_ = parent_color;
+	
+	if (rand() % 100 < 10) {
+		family_color_.r = Randomize256(family_color_.r);
+		family_color_.g = Randomize256(family_color_.g);
+		family_color_.b = Randomize256(family_color_.b);
+	}
+	my_type_ = cell_type_t::ALIVE;
 }
 
 void Cell::Update() {
 	float ener;
 	Vector2I buffer_pos;
 	BasicCell* buf_cell;
-	switch (Beh_DNA_[current_beh_gen].ID)
-	{
-	case gen_order::DO_NOTHING:
-		break;
-	case gen_order::GO:
-		if (!is_rage_) {
-			Move(Beh_DNA_[current_beh_gen].dir);
-		}
-		else {
-			buffer_pos = GetNearPos(Beh_DNA_[current_beh_gen].dir);
+	bool rage_flag = is_rage_;
+	is_divided_ = false;
+	int action_count = 0;
+	while (action_count < 5) {
+		switch (Beh_DNA_[current_beh_gen].ID)
+		{
+		case gen_order::DO_NOTHING:
+			break;
+		case gen_order::GO:
+			action_count += 5;
+			if (!is_rage_) {
+				Move(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+			}
+			else {
+				buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+				if (buffer_pos == grid_pos_)
+					break;
+				if ((buf_cell = my_grid_->GetCellFromGrid(buffer_pos)) == nullptr) {
+					Move(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+					break;
+				}
+				if (!buf_cell->IsEatable())
+					break;
+				ener = buf_cell->GetEnergy();
+				my_grid_->DeleteCell(buf_cell);
+				Move(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+				energy_ += ener * 0.5f;
+				if (color_.r + ener * 2 <= 255u) color_.r += ener * 2;
+				if (color_.g >= ener * 2) color_.g -= ener * 2;
+				if (color_.b >= ener * 2) color_.b -= ener * 2;
+			}
+			break;
+		case gen_order::EAT_SUN:
+			action_count += 5;
+			ener = my_grid_->GetSun(grid_pos_);
+			energy_ += ener;
+			if (color_.g + ener * 2 <= 255u) color_.g += ener * 2;
+			if (color_.b >= ener * 2) color_.b -= ener * 2;
+			if (color_.r >= ener * 2) color_.r -= ener * 2;
+			break;
+		case gen_order::EAT_MINERALS:
+			action_count += 5;
+			ener = my_grid_->GetMinerals(grid_pos_);
+			energy_ += ener;
+			if (color_.b + ener * 2 <= 255u) color_.b += ener * 2;
+			if (color_.g >= ener * 2) color_.g -= ener * 2;
+			if (color_.r >= ener * 2) color_.r -= ener * 2;
+			break;
+		case gen_order::BECOME_RAGE:
+			action_count++;
+			is_rage_ = true;
+			break;
+		case gen_order::ROTATE:
+			action_count++;
+			rotation_ = TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_);
+			break;
+		case gen_order::JUMP:
+			action_count++;
+			current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_CELL_NEAR:
+			action_count++;
+			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+			if (my_grid_->GetCellFromGrid(buffer_pos) == nullptr)
+				break;
+			current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_ALIVE_NEAR:
+			action_count++;
+			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+			if (my_grid_->GetCellFromGrid(buffer_pos) == nullptr || my_grid_->GetCellFromGrid(buffer_pos)->GetType() != cell_type_t::ALIVE)
+				break;
+			current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_CORPSE_NEAR:
+			action_count++;
+			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+			if (my_grid_->GetCellFromGrid(buffer_pos) == nullptr || my_grid_->GetCellFromGrid(buffer_pos)->GetType() != cell_type_t::CORPSE)
+				break;
+			current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_RELATIVE_NEAR:
+			action_count++;
+			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
+			if (my_grid_->GetCellFromGrid(buffer_pos) == nullptr)
+				break;
+			if (!IsSameWithError(family_color_.r, my_grid_->GetCellFromGrid(buffer_pos)->GetFamilyColor().r, 10))
+				break;
+			if (!IsSameWithError(family_color_.g, my_grid_->GetCellFromGrid(buffer_pos)->GetFamilyColor().g, 10))
+				break;
+			if (!IsSameWithError(family_color_.b, my_grid_->GetCellFromGrid(buffer_pos)->GetFamilyColor().b, 10))
+				break;
+			current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_ENERGY_LESS:
+			action_count++;
+			if (energy_ < static_cast<float>(Beh_DNA_[current_beh_gen].additional_data))
+				current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_ENERGY_HIGHER:
+			action_count++;
+			if (energy_ > static_cast<float>(Beh_DNA_[current_beh_gen].additional_data))
+				current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_Y_HIGHER:
+			action_count++;
+			if (grid_pos_.y > static_cast<float>(Beh_DNA_[current_beh_gen].additional_data))
+				current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::JUMP_IF_Y_LESS:
+			action_count++;
+			if (grid_pos_.y < static_cast<float>(Beh_DNA_[current_beh_gen].additional_data))
+				current_beh_gen = Beh_DNA_[current_beh_gen].data % BEH_DNA_SIZE;
+			break;
+		case gen_order::DIVIDE:
+			action_count += 5;
+			BornCell();
+			break;
+		case gen_order::EAT_CORPSE:
+			action_count += 5;
+			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
 			if (buffer_pos == grid_pos_)
 				break;
-			if ((buf_cell = my_grid_->GetCellFromGrid(buffer_pos)) == nullptr) {
-				Move(Beh_DNA_[current_beh_gen].dir);
+			if ((buf_cell = my_grid_->GetCellFromGrid(buffer_pos)) == nullptr) 
 				break;
-			}
-			if (!buf_cell->IsEatable())
+			if (buf_cell->GetType() != cell_type_t::CORPSE)
 				break;
-			ener = buf_cell->GetEnergy() / 2.f;
+			ener = buf_cell->GetEnergy();
 			my_grid_->DeleteCell(buf_cell);
-			Move(Beh_DNA_[current_beh_gen].dir);
-			energy_ += ener;
-			if (color_.r + ener * 2 <= 255u) color_.r += ener * 2;
-			if (color_.g >= ener * 2) color_.g -= ener * 2;
-			if (color_.b >= ener * 2) color_.b -= ener * 2;
-			is_rage_ = false;
+			energy_ += std::abs(ener) * 0.3f;
+
+		default:
+			break;
 		}
-		break;
-	case gen_order::EAT_SUN:
-		ener = my_grid_->GetSun(grid_pos_);
-		energy_ += ener;
-		if (color_.g + ener * 2 <= 255u) color_.g += ener * 2;
-		if (color_.b >= ener * 2) color_.b -= ener * 2;
-		if (color_.r >= ener * 2) color_.r -= ener * 2;
-		break;
-	case gen_order::EAT_MINERALS:
-		ener = my_grid_->GetMinerals(grid_pos_);
-		energy_ += ener;
-		if (color_.b + ener * 2 <= 255u) color_.b += ener * 2;
-		if (color_.g >= ener * 2) color_.g -= ener * 2;
-		if (color_.r >= ener * 2) color_.r -= ener * 2;
-		break;
-	case gen_order::BECOME_RAGE:
-		is_rage_ = true;
-		break;
-	default:
-		break;
+		current_beh_gen = (current_beh_gen + 1) % BEH_DNA_SIZE;
 	}
-	current_beh_gen = (current_beh_gen + 1) % BEH_DNA_SIZE;
 	energy_--;
-	if (energy_ < 0)
+	if (rage_flag)
+		is_rage_ = false;
+	if (energy_ < 0 && !is_died_) {
 		my_grid_->DeleteCell(this);
-	if (energy_ >= 150.f)
+		my_grid_->SpawnCell(new CellCorpse(grid_pos_, -50.f));
+		is_died_ = true;
+	}
+	if (energy_ >= 256.f && !is_died_)
 		BornCell();
 }
 void Cell::Draw() {
-	Debugger::DrawPoint(Vector2F(grid_pos_.x * 4, grid_pos_.y * 4), 4, 0, color_);
+	Debugger::DrawPoint(Vector2F(grid_pos_.x * 4, grid_pos_.y * 4), 4, 0, family_color_);
 }
 void Cell::Destroy() {
 
 }
 
 void Cell::BornCell() {
+	is_divided_ = true;
 	energy_ /= 2;
 	auto new_pos = grid_pos_;
 	if (grid_pos_.y > 0 && my_grid_->GetCellFromGrid(grid_pos_ + Vector2I(0, -1)) == nullptr) {
@@ -97,17 +234,18 @@ void Cell::BornCell() {
 	else if (my_grid_->GetCellFromGrid(grid_pos_ + Vector2I(1, 0)) == nullptr) {
 		new_pos.x++;
 		if (new_pos.x >= GRID_SIZE_X)
-			new_pos.x = GRID_SIZE_X - 1;
+			new_pos.x = 0;
 	}
 	else if (my_grid_->GetCellFromGrid(grid_pos_ + Vector2I(-1, 0)) == nullptr) {
 		new_pos.x--;
 		if (new_pos.x < 0)
-			new_pos.x = 0;
+			new_pos.x = GRID_SIZE_X - 1;
 	}
 	else {
 		my_grid_->DeleteCell(this);
-		my_grid_->SpawnCell(new CellCorpse(grid_pos_, 50.f));
+		my_grid_->SpawnCell(new CellCorpse(grid_pos_, -energy_));
+		is_died_ = true;
 		return;
 	}
-	my_grid_->SpawnCell(new Cell(new_pos, energy_, Beh_DNA_));
+	my_grid_->SpawnCell(new Cell(new_pos, energy_, Beh_DNA_, family_color_));
 }

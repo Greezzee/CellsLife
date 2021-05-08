@@ -183,6 +183,9 @@
     <ClCompile Include="CellsSource\Cell.cpp">
       <Filter>Header Files\Tests\Cells</Filter>
     </ClCompile>
+    <ClCompile Include="Gen.cpp">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="engine\colliders\CircleCollider.h">
@@ -282,6 +285,9 @@
       <Filter>Header Files\Tests\Cells</Filter>
     </ClInclude>
     <ClInclude Include="CellsSource\BasicCell.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
+    <ClInclude Include="CellWall.h">
       <Filter>Header Files\Tests\Cells</Filter>
     </ClInclude>
   </ItemGroup>

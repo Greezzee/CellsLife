@@ -17,6 +17,7 @@ public:
 	void DeleteCell(BasicCell* cell);
 	void UpdateCells();
 	void DrawCells();
+	void DeleteAllCells();
 
 	~CellGrid();
 
@@ -24,10 +25,10 @@ public:
 	void SetCellToGrid(BasicCell* cell, Vector2I pos);
 
 	float GetSun(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(125 - pos.y) / 25.f);
+		return std::max(0.f, static_cast<float>(125 - pos.y) / 50.f);
 	}
 	float GetMinerals(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(pos.y - 75) / 25.f);
+		return std::max(0.f, static_cast<float>(pos.y - 25) / 50.f);
 	}
 private:
 	std::vector<std::vector<BasicCell*>> grid_;

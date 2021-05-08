@@ -131,6 +131,7 @@
     <ClCompile Include="engine\time\TimeManager.cpp" />
     <ClCompile Include="engine\utility\Coordinate.cpp" />
     <ClCompile Include="engine\utility\Line.cpp" />
+    <ClCompile Include="Gen.cpp" />
     <ClCompile Include="Tests\main.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -140,6 +141,7 @@
     <ClInclude Include="CellsSource\CellGrid.h" />
     <ClInclude Include="CellsSource\CellScene.h" />
     <ClInclude Include="CellsSource\Gen.h" />
+    <ClInclude Include="CellWall.h" />
     <ClInclude Include="Engine\AllEngine.h" />
     <ClInclude Include="engine\colliders\CircleCollider.h" />
     <ClInclude Include="engine\colliders\Collider.h" />

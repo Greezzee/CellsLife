@@ -11,15 +11,18 @@ void CellGrid::SpawnCell(BasicCell* cell) {
 		if (cells_.find(cell) == cells_.end()) {
 			cell->SetGrid(this);
 			cells_.insert(cell);
+			DeleteCell(grid_[pos.y][pos.x % GRID_SIZE_X]);
 			grid_[pos.y][pos.x % GRID_SIZE_X] = cell;
 			return;
 		}
 		else {
 			std::cout << "Clone!!\n";
+			delete cell;
 		}
 	}
 	else {
-		std::cout << "Out of grid!\n";
+		std::cout << "Out of grid or at same pos!\n";
+		delete cell;
 	}
 }
 void CellGrid::DeleteCell(Vector2I pos) {
@@ -48,6 +51,17 @@ void CellGrid::DrawCells() {
 	for (auto& cell : cells_)
 		if (!cell->IsToDelete())
 			cell->Draw();
+}
+
+void CellGrid::DeleteAllCells() {
+	for (auto& cell : cells_) {
+		cell->Destroy();
+		delete cell;
+	}
+	cells_.clear();
+	for (auto& line : grid_)
+		for (auto& elem : line)
+			elem = nullptr;
 }
 
 CellGrid::~CellGrid() {

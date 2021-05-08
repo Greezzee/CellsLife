@@ -6,14 +6,23 @@
 
 const size_t BEH_DNA_SIZE = 64;
 
+enum class cell_type_t {
+	ERROR,
+	ALIVE,
+	CORPSE,
+	WALL
+};
+
 class BasicCell : public GameObject
 {
 public:
 	BasicCell::BasicCell(Vector2I start_pos, float start_energy, bool is_eatable) :
-		grid_pos_(start_pos), energy_(start_energy), my_grid_(), is_eatable_(is_eatable) {}
+		grid_pos_(Vector2I(start_pos.x % GRID_SIZE_X, start_pos.y)), energy_(start_energy), my_grid_(), is_eatable_(is_eatable) {}
 	Vector2I GetGridPos() { return grid_pos_; }
 	void SetGrid(CellGrid* grid) { my_grid_ = grid; }
 	float GetEnergy() { return energy_; }
+	cell_type_t GetType() { return my_type_; }
+	Color GetFamilyColor() { return family_color_; }
 	bool IsToDelete() { return to_delete_; }
 	void Delete() { to_delete_ = true; }
 
@@ -26,7 +35,9 @@ protected:
 	CellGrid* my_grid_;
 	bool to_delete_ = false;
 	Color color_;
+	Color family_color_;
 	bool is_eatable_ = false;
+	cell_type_t my_type_;
 
 	Vector2I GetNearPos(direction dir) {
 		auto pos = grid_pos_;

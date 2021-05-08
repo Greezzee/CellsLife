@@ -1,7 +1,11 @@
 #include "CellCorpse.h"
+#include "BasicCell.h"
 
 CellCorpse::CellCorpse(Vector2I start_pos, float start_energy) :
-	BasicCell(start_pos, start_energy, false) {}
+	BasicCell(start_pos, start_energy, false) {
+	my_type_ = cell_type_t::CORPSE;
+	family_color_ = Color::Black();
+}
 
 void CellCorpse::Update() {
 	corpse_timer++;
