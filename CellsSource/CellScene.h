@@ -7,7 +7,7 @@ class CellScene : public Scene {
 public:
 	void Init() override {
 		std::srand(time(NULL));
-		//GraphicManager::ShowFPS(true);
+		GraphicManager::ShowFPS(true);
 		//grid_.SpawnCell(new Cell({10, 10}, 50.f));
 		//grid_.SpawnCell(new Cell({ 11, 10 }, 5000.f));
 		//grid_.SpawnCell(new Cell({ 12, 10 }, 5000.f));
@@ -37,7 +37,7 @@ public:
 
 		if (InputManager::IsDown(MouseKey::Mouse_Right)) {
 			Vector2I mouse_pos = Vector2I(static_cast<int>(InputManager::GetMousePos().x) / 4, static_cast<int>(InputManager::GetMousePos().y) / 4);
-			grid_.SpawnCell(new Cell(mouse_pos, 50.f));
+			grid_.SpawnCell_thr1(new Cell(mouse_pos, 50.f));
 		}
 
 		if (InputManager::IsPressed(KeyboardKey::R)) {

@@ -1,6 +1,9 @@
 #pragma once
 #include <unordered_set>
 #include <array>
+#include <thread>
+#include <atomic>
+#include <mutex>
 #include "../Engine/AllEngine.h"
 
 class BasicCell;
@@ -12,9 +15,15 @@ class CellGrid final {
 public:
 	CellGrid();
 
+	void SpawnCell_thr1(BasicCell* cell);
 	void SpawnCell(BasicCell* cell);
 	void DeleteCell(Vector2I pos);
 	void DeleteCell(BasicCell* cell);
+	void UpdateCells_1();
+	void UpdateCells_2();
+	void UpdateCells_3();
+	void UpdateCells_4();
+	void UpdateCells_cross();
 	void UpdateCells();
 	void DrawCells();
 	void DeleteAllCells();
