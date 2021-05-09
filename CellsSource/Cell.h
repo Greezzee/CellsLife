@@ -1,11 +1,17 @@
 #pragma once
 #include "BasicCell.h"
 #include <iostream>
+
+struct parent_color_t {
+	Color family_color;
+	Color beh_color;
+};
+
 class Cell : public BasicCell
 {
 public:
 	Cell(Vector2I start_pos, float start_energy);
-	Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, Color parent_color = Color::Green());
+	Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, parent_color_t parent_color = { Color::Green(), Color::Green() });
 
 
 	void Update() override;

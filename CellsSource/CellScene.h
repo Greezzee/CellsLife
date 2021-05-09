@@ -48,6 +48,14 @@ public:
 			is_paused = !is_paused;
 		}
 
+		if (InputManager::IsPressed(N1)) {
+			grid_.SetDrawType(1);
+		}
+
+		if (InputManager::IsPressed(N2)) {
+			grid_.SetDrawType(2);
+		}
+
 		if (!is_paused)
 			grid_.UpdateCells();
 		grid_.DrawCells();

@@ -43,7 +43,7 @@ Cell::Cell(Vector2I start_pos, float start_energy) :
 	my_type_ = cell_type_t::ALIVE;
 }
 
-Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, Color parent_color) :
+Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, parent_color_t parent_color) :
 	BasicCell(start_pos, start_energy, true) {
 	Beh_DNA_ = parent_DNA;
 	for (auto& gen : Beh_DNA_) {
@@ -53,9 +53,10 @@ Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA
 					static_cast<char>(std::rand()), static_cast<char>(std::rand()) };
 	}
 
-	family_color_ = parent_color;
+	family_color_ = parent_color.family_color;
+	color_ = parent_color.beh_color;
 	
-	if (rand() % 100 < 10) {
+	if (rand() % 100 < 20) {
 		family_color_.r = Randomize256(family_color_.r);
 		family_color_.g = Randomize256(family_color_.g);
 		family_color_.b = Randomize256(family_color_.b);
@@ -93,27 +94,28 @@ void Cell::Update() {
 				ener = buf_cell->GetEnergy();
 				my_grid_->DeleteCell(buf_cell);
 				Move(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
-				energy_ += ener * 0.5f;
-				if (color_.r + ener * 2 <= 255u) color_.r += ener * 2;
-				if (color_.g >= ener * 2) color_.g -= ener * 2;
-				if (color_.b >= ener * 2) color_.b -= ener * 2;
+				ener *= 0.5f;
+				energy_ += ener;
+				if (color_.r + ener <= 255u) color_.r += ener;
+				if (color_.g >= ener * 0.5f) color_.g -= ener * 0.5f;
+				if (color_.b >= ener * 0.5f) color_.b -= ener * 0.5f;
 			}
 			break;
 		case gen_order::EAT_SUN:
 			action_count += 5;
 			ener = my_grid_->GetSun(grid_pos_);
 			energy_ += ener;
-			if (color_.g + ener * 2 <= 255u) color_.g += ener * 2;
-			if (color_.b >= ener * 2) color_.b -= ener * 2;
-			if (color_.r >= ener * 2) color_.r -= ener * 2;
+			if (color_.g + ener <= 255u) color_.g += ener;
+			if (color_.b >= ener * 0.5f) color_.b -= ener * 0.5f;
+			if (color_.r >= ener * 0.5f) color_.r -= ener * 0.5f;
 			break;
 		case gen_order::EAT_MINERALS:
 			action_count += 5;
 			ener = my_grid_->GetMinerals(grid_pos_);
 			energy_ += ener;
-			if (color_.b + ener * 2 <= 255u) color_.b += ener * 2;
-			if (color_.g >= ener * 2) color_.g -= ener * 2;
-			if (color_.r >= ener * 2) color_.r -= ener * 2;
+			if (color_.b + ener <= 255u) color_.b += ener;
+			if (color_.g >= ener * 0.5f) color_.g -= ener * 0.5f;
+			if (color_.r >= ener * 0.5f) color_.r -= ener * 0.5f;
 			break;
 		case gen_order::BECOME_RAGE:
 			action_count++;
@@ -196,8 +198,12 @@ void Cell::Update() {
 				break;
 			ener = buf_cell->GetEnergy();
 			my_grid_->DeleteCell(buf_cell);
-			energy_ += std::abs(ener) * 0.3f;
-
+			ener = 0.3f * std::abs(ener);
+			energy_ += ener;
+			if (color_.b + ener * 0.5f <= 255u) color_.b += ener * 0.5f;
+			if (color_.g >= ener) color_.g -= ener;
+			if (color_.r + ener * 0.5f <= 255u) color_.r += ener * 0.5f;
+			break;
 		default:
 			break;
 		}
@@ -206,16 +212,26 @@ void Cell::Update() {
 	energy_--;
 	if (rage_flag)
 		is_rage_ = false;
-	if (energy_ < 0 && !is_died_) {
+	if (energy_ < 15 && !is_died_) {
 		my_grid_->DeleteCell(this);
-		my_grid_->SpawnCell(new CellCorpse(grid_pos_, -50.f));
+		my_grid_->SpawnCell(new CellCorpse(grid_pos_, -15));
 		is_died_ = true;
 	}
 	if (energy_ >= 256.f && !is_died_)
 		BornCell();
 }
 void Cell::Draw() {
-	Debugger::DrawPoint(Vector2F(grid_pos_.x * 4, grid_pos_.y * 4), 4, 0, family_color_);
+	switch (my_grid_->GetDrawType())
+	{
+	case 1:
+		Debugger::DrawPoint(Vector2F(grid_pos_.x * 4, grid_pos_.y * 4), 4, 0, color_);
+		break;
+	case 2:
+		Debugger::DrawPoint(Vector2F(grid_pos_.x * 4, grid_pos_.y * 4), 4, 0, family_color_);
+		break;
+	default:
+		break;
+	}
 }
 void Cell::Destroy() {
 
@@ -247,5 +263,5 @@ void Cell::BornCell() {
 		is_died_ = true;
 		return;
 	}
-	my_grid_->SpawnCell(new Cell(new_pos, energy_, Beh_DNA_, family_color_));
+	my_grid_->SpawnCell(new Cell(new_pos, energy_, Beh_DNA_, { family_color_, color_ }));
 }
