@@ -34,10 +34,10 @@ public:
 	void SetCellToGrid(BasicCell* cell, Vector2I pos);
 
 	float GetSun(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(150 - pos.y) / 25.f);
+		return std::max(0.f, static_cast<float>(100 - pos.y) / 25.f);
 	}
 	float GetMinerals(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(pos.y) / 25.f);
+		return std::max(0.f, static_cast<float>(pos.y - 50) / 50.f);
 	}
 
 	int GetDrawType() {

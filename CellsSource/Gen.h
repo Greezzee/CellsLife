@@ -31,6 +31,18 @@ enum class direction {
 	direction_count
 };
 
+enum class property_gen_t {
+	SUN_EFF,
+	MINERALS_EFF,
+	PREDATOR_EFF,
+	CORPSE_EFF,
+	SPEED,
+	MAX_HEALTH,
+	MUTATION_RATE,
+
+	property_gen_count
+};
+
 struct Gen
 {
 	gen_order ID;

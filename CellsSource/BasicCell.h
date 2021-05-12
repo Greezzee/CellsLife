@@ -5,6 +5,7 @@
 #include <array>
 
 const size_t BEH_DNA_SIZE = 64;
+const size_t PROP_DNA_SIZE = 64;
 
 enum class cell_type_t {
 	ERROR,

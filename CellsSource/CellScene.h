@@ -56,6 +56,14 @@ public:
 			grid_.SetDrawType(2);
 		}
 
+		if (InputManager::IsPressed(N3)) {
+			grid_.SetDrawType(3);
+		}
+
+		if (InputManager::IsPressed(N4)) {
+			grid_.SetDrawType(4);
+		}
+
 		if (!is_paused)
 			grid_.UpdateCells();
 		grid_.DrawCells();

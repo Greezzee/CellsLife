@@ -11,7 +11,7 @@ class Cell : public BasicCell
 {
 public:
 	Cell(Vector2I start_pos, float start_energy);
-	Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, parent_color_t parent_color = { Color::Green(), Color::Green() });
+	Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA_SIZE>& parent_DNA, const std::array<property_gen_t, PROP_DNA_SIZE>& parent_prop_DNA, parent_color_t parent_color = { Color::Green(), Color::Green() });
 
 
 	void Update() override;
@@ -61,13 +61,28 @@ public:
 	}
 
 private:
+
+	struct efficenty_t {
+		float sun_eff = 1.f;
+		float minerals_eff = 1.f;
+		float predator_eff = 1.f;
+		float corpse_eff = 1.f;
+	} efficenty_;
+
+	int mutation_chance = 1;
+
 	size_t current_beh_gen = 0;
 	std::array<Gen, BEH_DNA_SIZE> Beh_DNA_;
+	std::array<property_gen_t, PROP_DNA_SIZE> Prop_DNA_;
 	direction rotation_ = direction::UP;
 
 	bool is_rage_ = false;
 	bool is_divided_ = false;
 	bool is_died_ = false;
+	int age_ = 0;
+	float energy_per_step = 1.f;
+	float max_energy = 100.f;
+	int actions_per_step = 5;
 	direction cur_dir = direction::UP;
 	void BornCell();
 };
