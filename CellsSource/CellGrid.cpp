@@ -79,7 +79,7 @@ void CellGrid::UpdateCells_1()
 {
 	for (auto& cell : cells_)
 	{
-		if (((cell->GetGridPos()).x > GRID_SIZE_X / 2) && ((cell->GetGridPos()).y > GRID_SIZE_Y / 2) && ((cell->GetGridPos()).x < GRID_SIZE_X) && ((cell->GetGridPos()).y < GRID_SIZE_Y))
+		if (((cell->GetGridPos()).x > GRID_SIZE_X / 2 + 1) && ((cell->GetGridPos()).y > GRID_SIZE_Y / 2 + 1) && ((cell->GetGridPos()).x < GRID_SIZE_X - 1) && ((cell->GetGridPos()).y < GRID_SIZE_Y - 1))
 			if (!cell->IsToDelete())
 				cell->Update();
 	}
@@ -89,7 +89,7 @@ void CellGrid::UpdateCells_2()
 {
 	for (auto& cell : cells_)
 	{
-		if (((cell->GetGridPos()).x > GRID_SIZE_X / 2) && ((cell->GetGridPos()).y < GRID_SIZE_Y / 2) && ((cell->GetGridPos()).x < GRID_SIZE_X) && ((cell->GetGridPos()).y > 0))
+		if (((cell->GetGridPos()).x > GRID_SIZE_X / 2 + 1) && ((cell->GetGridPos()).y < GRID_SIZE_Y / 2 - 1) && ((cell->GetGridPos()).x < GRID_SIZE_X - 1) && ((cell->GetGridPos()).y > 0 + 1))
 			if (!cell->IsToDelete())
 				cell->Update();
 	}
@@ -99,7 +99,7 @@ void CellGrid::UpdateCells_3()
 {
 	for (auto& cell : cells_)
 	{
-		if (((cell->GetGridPos()).x < GRID_SIZE_X / 2) && ((cell->GetGridPos()).y < GRID_SIZE_Y / 2) && ((cell->GetGridPos()).x > 0) && ((cell->GetGridPos()).y > 0))
+		if (((cell->GetGridPos()).x < GRID_SIZE_X / 2 - 1) && ((cell->GetGridPos()).y < GRID_SIZE_Y / 2 - 1) && ((cell->GetGridPos()).x > 0 + 1) && ((cell->GetGridPos()).y > 0 + 1))
 			if (!cell->IsToDelete())
 				cell->Update();
 	}
@@ -109,7 +109,7 @@ void CellGrid::UpdateCells_4()
 {
 	for (auto& cell : cells_)
 	{
-		if (((cell->GetGridPos()).x < GRID_SIZE_X / 2) && ((cell->GetGridPos()).y > GRID_SIZE_Y / 2) && ((cell->GetGridPos()).x > 0) && ((cell->GetGridPos()).y < GRID_SIZE_Y))
+		if (((cell->GetGridPos()).x < GRID_SIZE_X / 2 - 1) && ((cell->GetGridPos()).y > GRID_SIZE_Y / 2 + 1) && ((cell->GetGridPos()).x > 0 + 1) && ((cell->GetGridPos()).y < GRID_SIZE_Y - 1))
 			if (!cell->IsToDelete())
 				cell->Update();
 	}
@@ -119,7 +119,12 @@ void CellGrid::UpdateCells_cross()
 {
 	for (auto& cell : cells_)
 	{
-		if (((cell->GetGridPos()).x == GRID_SIZE_X / 2) || ((cell->GetGridPos()).y == GRID_SIZE_Y / 2) || ((cell->GetGridPos()).x == 0) || ((cell->GetGridPos()).y == 0))
+		if (((cell->GetGridPos()).x == GRID_SIZE_X / 2) || ((cell->GetGridPos()).y == GRID_SIZE_Y / 2) || ((cell->GetGridPos()).x == 0) || ((cell->GetGridPos()).y == 0)
+			|| ((cell->GetGridPos()).x == GRID_SIZE_X / 2 + 1) || ((cell->GetGridPos()).y == GRID_SIZE_Y / 2 + 1) || ((cell->GetGridPos()).x == 0 + 1) || ((cell->GetGridPos()).y == 0 + 1)
+			|| ((cell->GetGridPos()).x == GRID_SIZE_X / 2 - 1) || ((cell->GetGridPos()).y == GRID_SIZE_Y / 2 - 1) || ((cell->GetGridPos()).x == 0 - 1) || ((cell->GetGridPos()).y == 0 - 1)
+			|| ((cell->GetGridPos()).x == GRID_SIZE_X) || ((cell->GetGridPos()).y == GRID_SIZE_Y)
+			|| ((cell->GetGridPos()).x == GRID_SIZE_X + 1) || ((cell->GetGridPos()).y == GRID_SIZE_Y + 1)
+			|| ((cell->GetGridPos()).x == GRID_SIZE_X - 1) || ((cell->GetGridPos()).y == GRID_SIZE_Y - 1))
 			if (!cell->IsToDelete())
 				cell->Update();
 	}
