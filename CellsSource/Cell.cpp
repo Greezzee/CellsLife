@@ -68,10 +68,30 @@ Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA
 		{
 		case property_gen_t::SPEED: actions_per_step++; break;
 		case property_gen_t::MAX_HEALTH: max_energy += 10.f; break;
-		case property_gen_t::SUN_EFF: efficenty_.sun_eff += 0.1f; break;
-		case property_gen_t::MINERALS_EFF: efficenty_.minerals_eff += 0.1f; break;
-		case property_gen_t::PREDATOR_EFF: efficenty_.predator_eff += 0.1f; break;
-		case property_gen_t::CORPSE_EFF: efficenty_.corpse_eff += 0.1f; break;
+		case property_gen_t::SUN_EFF: 
+			efficenty_.sun_eff += 0.05f;
+			efficenty_.minerals_eff -= 0.05f / 2.f;
+			efficenty_.predator_eff -= 0.015f / 2.f;
+			efficenty_.corpse_eff -= 0.05f / 2.f;
+			break;
+		case property_gen_t::MINERALS_EFF: 
+			efficenty_.sun_eff -= 0.05f / 2.f;
+			efficenty_.minerals_eff += 0.05f;
+			efficenty_.predator_eff -= 0.015f / 2.f;
+			efficenty_.corpse_eff -= 0.05f / 2.f;
+			break;
+		case property_gen_t::PREDATOR_EFF: 
+			efficenty_.sun_eff -= 0.05f / 2.f;
+			efficenty_.minerals_eff -= 0.05f / 2.f;
+			efficenty_.predator_eff += 0.015f;
+			efficenty_.corpse_eff -= 0.05f / 2.f;
+			break;
+		case property_gen_t::CORPSE_EFF: 
+			efficenty_.sun_eff -= 0.05f / 2.f;
+			efficenty_.minerals_eff -= 0.05f / 2.f;
+			efficenty_.predator_eff -= 0.015f / 2.f;
+			efficenty_.corpse_eff += 0.05f;
+			break;
 		default:
 			break;
 		}
@@ -80,7 +100,7 @@ Cell::Cell(Vector2I start_pos, float start_energy, const std::array<Gen, BEH_DNA
 	family_color_ = parent_color.family_color;
 	color_ = parent_color.beh_color;
 	
-	if (rand() % 100 < mutation_chance) {
+	if (rand() % 100 < mutation_chance * 5) {
 		family_color_.r = Randomize256(family_color_.r);
 		family_color_.g = Randomize256(family_color_.g);
 		family_color_.b = Randomize256(family_color_.b);
@@ -123,10 +143,12 @@ void Cell::Update() {
 				if (color_.r + ener <= 255u) color_.r += ener;
 				if (color_.g >= ener * 0.5f) color_.g -= ener * 0.5f;
 				if (color_.b >= ener * 0.5f) color_.b -= ener * 0.5f;
+				is_rage_ = false;
+				action_count += actions_per_step;
 			}
 			break;
 		case gen_order::EAT_SUN:
-			action_count += 5;
+			action_count += actions_per_step;
 			ener = my_grid_->GetSun(grid_pos_) * efficenty_.sun_eff;
 			energy_ += ener;
 			if (color_.g + ener <= 255u) color_.g += ener;
@@ -134,7 +156,7 @@ void Cell::Update() {
 			if (color_.r >= ener * 0.5f) color_.r -= ener * 0.5f;
 			break;
 		case gen_order::EAT_MINERALS:
-			action_count += 5;
+			action_count += actions_per_step;
 			ener = my_grid_->GetMinerals(grid_pos_) * efficenty_.minerals_eff;
 			energy_ += ener;
 			if (color_.b + ener <= 255u) color_.b += ener;
@@ -213,7 +235,7 @@ void Cell::Update() {
 				BornCell();
 			break;
 		case gen_order::EAT_CORPSE:
-			action_count += 5;
+			action_count += actions_per_step;
 			buffer_pos = GetNearPos(TransformWithRotation(Beh_DNA_[current_beh_gen].dir, rotation_));
 			if (buffer_pos == grid_pos_)
 				break;
@@ -223,7 +245,7 @@ void Cell::Update() {
 				break;
 			ener = buf_cell->GetEnergy() * efficenty_.corpse_eff;
 			my_grid_->DeleteCell(buf_cell);
-			ener = 0.3f * std::abs(ener);
+			ener = 0.5f * std::abs(ener);
 			energy_ += ener;
 			if (color_.b + ener * 0.5f <= 255u) color_.b += ener * 0.5f;
 			if (color_.g >= ener) color_.g -= ener;

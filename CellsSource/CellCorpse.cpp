@@ -10,7 +10,7 @@ CellCorpse::CellCorpse(Vector2I start_pos, float start_energy) :
 void CellCorpse::Update() {
 	corpse_timer++;
 	if (corpse_timer >= max_time) {
-		my_grid_->DeleteCell(this);
+		//my_grid_->DeleteCell(this);
 		return;
 	}
 	Move(direction::DOWN);
