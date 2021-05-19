@@ -7,7 +7,7 @@ class CellScene : public Scene {
 public:
 	void Init() override {
 		std::srand(time(NULL));
-		GraphicManager::ShowFPS(true);
+		//GraphicManager::ShowFPS(true);
 		//grid_.SpawnCell(new Cell({10, 10}, 50.f));
 		//grid_.SpawnCell(new Cell({ 11, 10 }, 5000.f));
 		//grid_.SpawnCell(new Cell({ 12, 10 }, 5000.f));
@@ -42,6 +42,20 @@ public:
 
 		if (InputManager::IsPressed(KeyboardKey::R)) {
 			grid_.DeleteAllCells();
+		}
+
+		if (InputManager::IsPressed(KeyboardKey::S)) {
+			std::string input;
+			std::cout << "Enter the name of the file: ";
+			std::cin >> input;
+			grid_.SaveToFile(input);
+		}
+
+		if (InputManager::IsPressed(KeyboardKey::L)) {
+			std::string input;
+			std::cout << "Enter the name of the file: ";
+			std::cin >> input;
+			grid_.LoadFromFile(input);
 		}
 
 		if (InputManager::IsPressed(KeyboardKey::SPACE)) {

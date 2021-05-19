@@ -1,8 +1,121 @@
 #include "CellGrid.h"
 #include "BasicCell.h"
+#include "Cell.h"
+#include "CellCorpse.h"
+#include "../CellWall.h"
 #include <iostream>
 CellGrid::CellGrid() :
 	grid_(std::vector<std::vector<BasicCell*>>(GRID_SIZE_Y, std::vector<BasicCell*>(GRID_SIZE_X, nullptr))) {}
+
+void CellGrid::LoadFromFile(const std::string file_name) {
+	int ret = 0;
+	const char* file_str = file_name.c_str();
+	FILE* file = fopen(file_str, "rb");
+	if (file == NULL) {
+		std::cout << "Failed to open the file \"" << file_name << "\"!";
+		return ;
+	}
+
+	// Clear the grid
+	DeleteAllCells();
+
+	// Get the information about number of each cells' type
+	std::size_t alive_cells_n = 0;
+	std::size_t cell_corps_n = 0;
+	std::size_t cell_walls_n = 0;
+
+	FREAD(ret, &alive_cells_n, sizeof(alive_cells_n), 1, file);
+	FREAD(ret, &cell_corps_n, sizeof(cell_corps_n), 1, file);
+	FREAD(ret, &cell_walls_n, sizeof(cell_walls_n), 1, file);
+
+	// Load the information about alive cells
+	for (auto i = 0; i < alive_cells_n; ++i) {
+		Cell* tmp = new Cell({ 0 ,0 }, 0);
+		FREAD(ret, tmp, sizeof(Cell), 1, file);
+		SpawnCell_thr1(tmp);
+	}
+	// Load the information about cell corps
+	for (auto i = 0; i < cell_corps_n; ++i) {
+		CellCorpse* tmp = new CellCorpse({ 0 ,0 }, 0);
+		FREAD(ret, tmp, sizeof(CellCorpse), 1, file);
+		SpawnCell_thr1(tmp);
+	}
+	// Load the information about cell walls
+	for (auto i = 0; i < cell_walls_n; ++i) {
+		CellWall* tmp = new CellWall({0, 0});
+		FREAD(ret, tmp, sizeof(CellWall), 1, file);
+		SpawnCell_thr1(tmp);
+	}
+
+	// Close the file
+	ret = fclose(file);
+	if (ret < 0) {
+		std::cout << "Failed to close the file!" << std::endl;
+	}
+
+	std::cout << "The grid was loaded from \"" << file_name << "\"" << std::endl;
+}
+
+void CellGrid::SaveToFile(const std::string file_name) {
+	int ret = 0;
+	const char* file_str = file_name.c_str();
+	// Open the target file
+	FILE* file = fopen(file_str, "wb");
+	if (file == NULL) {
+		std::cout << "Failed to open/create the file \"" << file_name << "\"!" << std::endl;
+		return;
+	}
+
+	// Count alive cells, corps and wall cells
+	std::size_t cells_count = cells_.size();
+	std::size_t alive_cells_n = 0;
+	std::size_t cell_corps_n = 0;
+	std::size_t cell_walls_n = 0;
+	for (auto&& cell : cells_) {
+		switch (cell->GetType()) {
+		case cell_type_t::ALIVE:
+			alive_cells_n++;
+			break;
+		case cell_type_t::CORPSE:
+			cell_corps_n++;
+			break;
+		case cell_type_t::WALL:
+			cell_walls_n++;
+			break;
+		default:
+			throw std::runtime_error("Unknown cell type!");
+		}
+	}
+
+	// Put these numbers into the begining of this file (3 size_t variables)
+	FWRITE(ret, &alive_cells_n, sizeof(alive_cells_n), 1, file);
+	FWRITE(ret, &cell_corps_n, sizeof(cell_corps_n), 1, file);
+	FWRITE(ret, &cell_walls_n, sizeof(cell_walls_n), 1, file);
+
+	// Put the information about alive cells
+	for (auto& cell : cells_) {
+		if (cell->GetType() == cell_type_t::ALIVE)
+			FWRITE(ret, (char*) cell, sizeof(Cell), 1, file);
+	}
+	// Put the information about cell corps
+	for (auto& cell : cells_) {
+		if (cell->GetType() == cell_type_t::CORPSE)
+			FWRITE(ret, (char*) cell, sizeof(CellCorpse), 1, file);
+	}
+	// Put the information about cell walls
+	for (auto& cell : cells_) {
+		if (cell->GetType() == cell_type_t::WALL)
+			FWRITE(ret, (char*) cell, sizeof(CellWall), 1, file);
+	}
+
+	// Close the file
+	ret = fclose(file);
+	if (ret < 0) {
+		std::cout << "Failed to close the file!" << std::endl;
+	}
+
+	std::cout << "The grid was saved to \"" << file_name << "\"" << std::endl;
+}
 
 void CellGrid::SpawnCell_thr1(BasicCell* cell) {
 	auto pos = cell->GetGridPos();

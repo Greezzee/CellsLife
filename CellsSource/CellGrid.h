@@ -4,6 +4,7 @@
 #include <thread>
 #include <atomic>
 #include <mutex>
+#include <iostream>
 #include "../Engine/AllEngine.h"
 
 class BasicCell;
@@ -47,6 +48,29 @@ public:
 	void SetDrawType(int draw_type) {
 		draw_type_ = draw_type;
 	}
+
+	// Macro for fwrite with error checking
+#define FWRITE(ret, buf, size, count, file_stream)						\
+	do {																\
+		ret = fwrite(buf, size, count, file_stream);					\
+		if (ret < 0) {													\
+			throw std::runtime_error("Error while saving the grid!");	\
+		}																\
+	} while (0);														\
+
+	// Macro for fread with error checking
+#define FREAD(ret, buf, size, count, file_stream)						\
+	do {																\
+		ret = fread(buf, size, count, file_stream);						\
+		if (ret < 0) {													\
+			throw std::runtime_error("Error while reading the file!");	\
+		}																\
+	} while (0);														\
+
+	// Save the grid into the file with the given name
+	void SaveToFile(const std::string file_name);
+	// Load the grid from the file with the given name
+	void LoadFromFile(const std::string file_name);
 private:
 	std::vector<std::vector<BasicCell*>> grid_;
 	std::unordered_set<BasicCell*> cells_;
