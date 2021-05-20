@@ -60,3 +60,183 @@ private:
 	CellGrid grid_;
 	bool is_paused = false;
 };
+
+struct sprite_info
+{
+	unsigned spriteID;
+	unsigned spriteLR;
+	Vector2F sprite_pos;
+	Vector2F size;
+
+	sprite_info(unsigned ID, unsigned LR, Vector2F size_) : spriteID(ID), spriteLR(LR)
+	{
+		size.x = size_.x;
+		size.y = size_.y;
+		sprite_pos.x = 0;
+		sprite_pos.y = 0;
+	}
+};
+
+/*class OptScene : public Scene
+{
+private:
+	std::vector<sprite_info> sprites_info;
+	void load_sprites()
+	{
+
+	}
+
+	void draw_sprites()
+	{
+
+	}
+
+public:
+
+	void Init() override
+	{
+		std::srand(time(NULL));
+		GraphicManager::ShowFPS(NULL);
+
+		load_sprites();
+	}
+
+	void Update() override
+	{
+
+	}
+
+
+};*/
+
+enum buttons
+{
+	START , START_PRESSED , OPT , OPT_PRESSED , BACK_ , BACK_PRESSED
+};
+
+class StartScene : public Scene
+{
+
+private:
+	std::vector<sprite_info> sprites_info;
+	void load_sprites()
+	{
+		int texID = GraphicManager::LoadTexture("./tests/fullbuttonsprite.png");
+		//std::cout << texID << std::endl;
+		Vector2F size = { 731 , 256 };
+		Vector2F size_spr = { 600 , 200 };
+		Vector2F pos_tx = { 0 , 0 };
+		Vector2F pos_fl = { 280 , 10 };
+		for (int i = 0; i < 6; ++i)
+		{
+			GraphicPrefabData sprite(texID, size, 1, pos_tx);
+			int spr_ID = GraphicManager::LoadSprite(sprite);
+			sprites_info.push_back(sprite_info(spr_ID , 10 , size_spr));
+			pos_tx.x += 731;
+		}
+
+			sprites_info[START].sprite_pos.x = pos_fl.x;
+			sprites_info[START_PRESSED].sprite_pos.x = pos_fl.x;
+			sprites_info[START].sprite_pos.y = pos_fl.y;
+			sprites_info[START_PRESSED].sprite_pos.y = pos_fl.y;
+
+			pos_fl.y += 220;
+
+			sprites_info[OPT].sprite_pos.x = pos_fl.x;
+			sprites_info[OPT_PRESSED].sprite_pos.x = pos_fl.x;
+			sprites_info[OPT].sprite_pos.y = pos_fl.y;
+			sprites_info[OPT_PRESSED].sprite_pos.y = pos_fl.y;
+
+			pos_fl.y += 220;
+
+			sprites_info[BACK_].sprite_pos.x = pos_fl.x;
+			sprites_info[BACK_PRESSED].sprite_pos.x = pos_fl.x;
+			sprites_info[BACK_].sprite_pos.y = pos_fl.y;
+			sprites_info[BACK_PRESSED].sprite_pos.y = pos_fl.y;
+	}
+	
+public:
+	void Init() override
+	{
+		std::srand(time(NULL));
+		GraphicManager::ShowFPS(NULL);
+
+		load_sprites();
+	}
+
+	void Update() override
+	{
+
+		if ((InputManager::GetMousePos().x > sprites_info[START].sprite_pos.x) && (InputManager::GetMousePos().x < sprites_info[START].sprite_pos.x + sprites_info[START].size.x) &&
+			(InputManager::GetMousePos().y > sprites_info[START].sprite_pos.y) && (InputManager::GetMousePos().y < sprites_info[START].sprite_pos.y + sprites_info[START].size.y))
+		{
+			DrawData for_draw(sprites_info[START_PRESSED].spriteID, sprites_info[START_PRESSED].spriteLR, sprites_info[START_PRESSED].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+			if ((InputManager::IsPressed(Mouse_Left)))
+			{
+				Scene* start = new CellScene;
+				SceneManager::CreateScene(start);
+				SceneManager::CloseScene(this);
+				return;
+			}
+		}
+		else
+		{
+			DrawData for_draw(sprites_info[START].spriteID, sprites_info[START].spriteLR, sprites_info[START].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+		}
+
+		if ((InputManager::GetMousePos().x > sprites_info[OPT].sprite_pos.x) && (InputManager::GetMousePos().x < sprites_info[OPT].sprite_pos.x + sprites_info[OPT].size.x) &&
+			(InputManager::GetMousePos().y > sprites_info[OPT].sprite_pos.y) && (InputManager::GetMousePos().y < sprites_info[OPT].sprite_pos.y + sprites_info[OPT].size.y))
+		{
+			DrawData for_draw(sprites_info[OPT_PRESSED].spriteID, sprites_info[OPT_PRESSED].spriteLR, sprites_info[OPT_PRESSED].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+			if ((InputManager::IsPressed(Mouse_Left)))
+			{
+				/*Scene* start = new OptScene;
+				SceneManager::CreateScene(start);
+				SceneManager::CloseScene(this);*/
+				//return;
+			}
+		}
+		else
+		{
+			DrawData for_draw(sprites_info[OPT].spriteID, sprites_info[OPT].spriteLR, sprites_info[OPT].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+		}
+
+		if ((InputManager::GetMousePos().x > sprites_info[BACK_].sprite_pos.x) && (InputManager::GetMousePos().x < sprites_info[BACK_].sprite_pos.x + sprites_info[BACK_].size.x) &&
+			(InputManager::GetMousePos().y > sprites_info[BACK_].sprite_pos.y) && (InputManager::GetMousePos().y < sprites_info[BACK_].sprite_pos.y + sprites_info[BACK_].size.y))
+		{
+			DrawData for_draw(sprites_info[BACK_PRESSED].spriteID, sprites_info[BACK_PRESSED].spriteLR, sprites_info[BACK_PRESSED].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+			if ((InputManager::IsPressed(Mouse_Left)))
+			{
+				SceneManager::CloseScene(this);
+				return;
+			}
+		}
+		else
+		{
+			DrawData for_draw(sprites_info[BACK_].spriteID, sprites_info[BACK_].spriteLR, sprites_info[BACK_].sprite_pos);
+			for_draw.size.x = 600;
+			for_draw.size.y = 200;
+			GraphicManager::Draw(for_draw);
+		}
+	}
+
+	void Destroy() override 
+	{
+
+	}
+};

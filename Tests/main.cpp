@@ -6,7 +6,7 @@
 int main()
 {
 	GameManager::Init();
-	Scene* start = new CellScene;
+	Scene* start = new StartScene;
 	start->Init();
 	GameManager::Launch(start);
 	return 0;
