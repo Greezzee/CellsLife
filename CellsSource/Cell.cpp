@@ -3,6 +3,7 @@
 #include "CellGrid.h"
 #include "CellCorpse.h"
 #include "Gen.h"
+#include "CellData.h"
 
 unsigned Randomize256(unsigned x) {
 	unsigned r = rand() % 25;
@@ -318,4 +319,74 @@ void Cell::BornCell() {
 		return;
 	}
 	my_grid_->SpawnCell(new Cell(new_pos, energy_, Beh_DNA_, Prop_DNA_, { family_color_, color_ }));
+}
+
+cell_data_t Cell::GetCellData() {
+	cell_data_t out;
+	out.type = my_type_;
+
+	out.data.as_alive.actions_per_step = actions_per_step;
+	out.data.as_alive.age = age_;
+	out.data.as_alive.color = color_;
+	out.data.as_alive.current_beh_gen = current_beh_gen;
+	out.data.as_alive.cur_dir = cur_dir;
+
+	out.data.as_alive.efficenty.corpse_eff = efficenty_.corpse_eff;
+	out.data.as_alive.efficenty.minerals_eff = efficenty_.minerals_eff;
+	out.data.as_alive.efficenty.predator_eff = efficenty_.predator_eff;
+	out.data.as_alive.efficenty.sun_eff = efficenty_.sun_eff;
+
+	out.data.as_alive.energy = energy_;
+	out.data.as_alive.energy_per_step = energy_per_step;
+	out.data.as_alive.family_color = family_color_;
+	out.data.as_alive.grid_pos = grid_pos_;
+	out.data.as_alive.is_died = is_died_;
+	out.data.as_alive.is_divided = is_divided_;
+	out.data.as_alive.is_eatable = is_eatable_;
+	out.data.as_alive.is_rage = is_rage_;
+
+	out.data.as_alive.max_energy = max_energy;
+	out.data.as_alive.mutation_chance = mutation_chance;
+	out.data.as_alive.rotation = rotation_;
+	out.data.as_alive.to_delete = to_delete_;
+
+	for (int i = 0; i < BEH_DNA_SIZE; i++)
+		out.data.as_alive.Beh_DNA[i] = Beh_DNA_[i];
+	for (int i = 0; i < PROP_DNA_SIZE; i++)
+		out.data.as_alive.Prop_DNA[i] = Prop_DNA_[i];
+
+	return out;
+}
+void Cell::SetCellData(const cell_data_t& data) {
+	my_type_ = cell_type_t::ALIVE;
+
+	actions_per_step = data.data.as_alive.actions_per_step;
+	age_ = data.data.as_alive.age;
+	color_ = data.data.as_alive.color;
+	current_beh_gen = data.data.as_alive.current_beh_gen;
+	cur_dir = data.data.as_alive.cur_dir;
+
+	efficenty_.corpse_eff = data.data.as_alive.efficenty.corpse_eff;
+	efficenty_.minerals_eff = data.data.as_alive.efficenty.minerals_eff;
+	efficenty_.predator_eff = data.data.as_alive.efficenty.predator_eff;
+	efficenty_.sun_eff = data.data.as_alive.efficenty.sun_eff;
+
+	energy_ = data.data.as_alive.energy;
+	energy_per_step = data.data.as_alive.energy_per_step;
+	family_color_ = data.data.as_alive.family_color;
+	grid_pos_ = data.data.as_alive.grid_pos;
+	is_died_ = data.data.as_alive.is_died;
+	is_divided_ = data.data.as_alive.is_divided;
+	is_eatable_ = data.data.as_alive.is_eatable;
+	is_rage_ = data.data.as_alive.is_rage;
+
+	max_energy = data.data.as_alive.max_energy;
+	mutation_chance = data.data.as_alive.mutation_chance;
+	rotation_ = data.data.as_alive.rotation;
+	to_delete_ = data.data.as_alive.to_delete;
+
+	for (int i = 0; i < BEH_DNA_SIZE; i++)
+		Beh_DNA_[i] = data.data.as_alive.Beh_DNA[i];
+	for (int i = 0; i < PROP_DNA_SIZE; i++)
+		Prop_DNA_[i] = data.data.as_alive.Prop_DNA[i];
 }

@@ -2,17 +2,8 @@
 #include "../Engine/AllEngine.h"
 #include "Gen.h"
 #include "CellGrid.h"
+#include "CellData.h"
 #include <array>
-
-const size_t BEH_DNA_SIZE = 64;
-const size_t PROP_DNA_SIZE = 64;
-
-enum class cell_type_t {
-	ERROR,
-	ALIVE,
-	CORPSE,
-	WALL
-};
 
 class BasicCell : public GameObject
 {
@@ -27,6 +18,8 @@ public:
 	bool IsToDelete() { return to_delete_; }
 	void Delete() { to_delete_ = true; }
 
+	virtual cell_data_t GetCellData() = 0;
+	virtual void SetCellData(const cell_data_t& data) = 0;
 
 	bool IsEatable() { return is_eatable_; }
 	virtual ~BasicCell() {}

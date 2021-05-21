@@ -290,6 +290,9 @@
     <ClInclude Include="CellWall.h">
       <Filter>Header Files\Tests\Cells</Filter>
     </ClInclude>
+    <ClInclude Include="CellsSource\CellData.h">
+      <Filter>Header Files\Tests\Cells</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="Engine\Graphics\Shaders\SmoothLight.frag">

@@ -60,6 +60,9 @@ public:
 		}
 	}
 
+	cell_data_t GetCellData() override;
+	void SetCellData(const cell_data_t& data) override;
+
 private:
 
 	struct efficenty_t {

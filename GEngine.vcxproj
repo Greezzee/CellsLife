@@ -138,6 +138,7 @@
     <ClInclude Include="CellsSource\BasicCell.h" />
     <ClInclude Include="CellsSource\Cell.h" />
     <ClInclude Include="CellsSource\CellCorpse.h" />
+    <ClInclude Include="CellsSource\CellData.h" />
     <ClInclude Include="CellsSource\CellGrid.h" />
     <ClInclude Include="CellsSource\CellScene.h" />
     <ClInclude Include="CellsSource\Gen.h" />
