@@ -30,20 +30,29 @@ void CellGrid::LoadFromFile(const std::string file_name) {
 
 	// Load the information about alive cells
 	for (auto i = 0; i < alive_cells_n; ++i) {
-		Cell* tmp = new Cell({ 0 ,0 }, 0);
-		FREAD(ret, tmp, sizeof(Cell), 1, file);
+		cell_data_t data;
+		data.type = cell_type_t::ALIVE;
+		FREAD(ret, &(data.data.as_alive), sizeof(alive_data_t), 1, file);
+		Cell* tmp = new Cell(data.data.as_alive.grid_pos, 0);
+		tmp->SetCellData(data);
 		SpawnCell_thr1(tmp);
 	}
 	// Load the information about cell corps
 	for (auto i = 0; i < cell_corps_n; ++i) {
-		CellCorpse* tmp = new CellCorpse({ 0 ,0 }, 0);
-		FREAD(ret, tmp, sizeof(CellCorpse), 1, file);
+		cell_data_t data;
+		data.type = cell_type_t::CORPSE;
+		FREAD(ret, &(data.data.as_corpse), sizeof(corpse_data_t), 1, file);
+		CellCorpse* tmp = new CellCorpse(data.data.as_corpse.grid_pos, 0);
+		tmp->SetCellData(data);
 		SpawnCell_thr1(tmp);
 	}
 	// Load the information about cell walls
 	for (auto i = 0; i < cell_walls_n; ++i) {
-		CellWall* tmp = new CellWall({0, 0});
-		FREAD(ret, tmp, sizeof(CellWall), 1, file);
+		cell_data_t data;
+		data.type = cell_type_t::WALL;
+		FREAD(ret, &(data.data.as_wall), sizeof(wall_data_t), 1, file);
+		CellWall* tmp = new CellWall(data.data.as_wall.grid_pos);
+		tmp->SetCellData(data);
 		SpawnCell_thr1(tmp);
 	}
 
@@ -94,18 +103,24 @@ void CellGrid::SaveToFile(const std::string file_name) {
 
 	// Put the information about alive cells
 	for (auto& cell : cells_) {
-		if (cell->GetType() == cell_type_t::ALIVE)
-			FWRITE(ret, (char*) cell, sizeof(Cell), 1, file);
+		if (cell->GetType() == cell_type_t::ALIVE) {
+			cell_data_t data = cell->GetCellData();
+			FWRITE(ret, &(data.data.as_alive), sizeof(alive_data_t), 1, file);
+		}
 	}
 	// Put the information about cell corps
 	for (auto& cell : cells_) {
-		if (cell->GetType() == cell_type_t::CORPSE)
-			FWRITE(ret, (char*) cell, sizeof(CellCorpse), 1, file);
+		if (cell->GetType() == cell_type_t::CORPSE) {
+			cell_data_t data = cell->GetCellData();
+			FWRITE(ret, &(data.data.as_corpse), sizeof(corpse_data_t), 1, file);
+		}
 	}
 	// Put the information about cell walls
 	for (auto& cell : cells_) {
-		if (cell->GetType() == cell_type_t::WALL)
-			FWRITE(ret, (char*) cell, sizeof(CellWall), 1, file);
+		if (cell->GetType() == cell_type_t::WALL) {
+			cell_data_t data = cell->GetCellData();
+			FWRITE(ret, &(data.data.as_wall), sizeof(wall_data_t), 1, file);
+		}
 	}
 
 	// Close the file

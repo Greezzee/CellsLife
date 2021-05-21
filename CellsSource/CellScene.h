@@ -25,7 +25,8 @@ public:
 	void Update() override {
 		Debugger::DrawPoint(Vector2F(0, 0), 5000, 0, Color(50, 50, 50));
 
-		if (InputManager::IsPressed(MouseKey::Mouse_Left)) {
+		if (InputManager::IsDown(MouseKey::Mouse_Left)) {
+			/*
 			Vector2I mouse_pos = Vector2I(static_cast<int>(InputManager::GetMousePos().x) / 4, static_cast<int>(InputManager::GetMousePos().y) / 4);
 			//grid_.SpawnCell(new CellWall(mouse_pos));
 			BasicCell* cell = grid_.GetCellFromGrid(mouse_pos);
@@ -33,6 +34,9 @@ public:
 			if ((c = dynamic_cast<Cell*>(cell)) != nullptr) {
 				c->PrintDNA();
 			}
+			*/
+			Vector2I mouse_pos = Vector2I(static_cast<int>(InputManager::GetMousePos().x) / 4, static_cast<int>(InputManager::GetMousePos().y) / 4);
+			grid_.SpawnCell_thr1(new CellWall(mouse_pos));
 		}
 
 		if (InputManager::IsDown(MouseKey::Mouse_Right)) {
