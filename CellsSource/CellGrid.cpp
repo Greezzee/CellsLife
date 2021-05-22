@@ -5,7 +5,7 @@
 #include "../CellWall.h"
 #include <iostream>
 CellGrid::CellGrid() :
-	grid_(std::vector<std::vector<BasicCell*>>(GRID_SIZE_Y, std::vector<BasicCell*>(GRID_SIZE_X, nullptr))) {}
+		grid_(std::vector<std::vector<BasicCell*>>(GRID_SIZE_Y, std::vector<BasicCell*>(GRID_SIZE_X, nullptr))) , min_per_opt(0) , sun_per_opt(150) {}
 
 void CellGrid::LoadFromFile(const std::string file_name) {
 	int ret = 0;

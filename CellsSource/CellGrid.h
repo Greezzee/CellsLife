@@ -16,6 +16,9 @@ class CellGrid final {
 public:
 	CellGrid();
 
+	unsigned sun_per_opt;
+	unsigned min_per_opt;
+
 	void SpawnCell_thr1(BasicCell* cell);
 	void SpawnCell(BasicCell* cell);
 	void DeleteCell(Vector2I pos);
@@ -35,10 +38,10 @@ public:
 	void SetCellToGrid(BasicCell* cell, Vector2I pos);
 
 	float GetSun(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(150 - pos.y) / 25.f);
+		return std::max(0.f, static_cast<float>(sun_per_opt - pos.y) / 25.f);
 	}
 	float GetMinerals(Vector2I pos) {
-		return std::max(0.f, static_cast<float>(pos.y) / 25.f);
+		return std::max(0.f, static_cast<float>(pos.y + min_per_opt) / 25.f);
 	}
 
 	int GetDrawType() {
